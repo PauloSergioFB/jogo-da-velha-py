@@ -1,75 +1,64 @@
 from copy import deepcopy
 
-
-# Retorna uma lista com as posições disponíveis no tabuleiro
-def get_available_spaces(board):
-    available_spaces = []
-
-    i = 1
-    for line in board:
-        for pos in line:
-            if pos == "":
-                available_spaces.append(str(i))
-
-            i += 1
-
-    return available_spaces
+from utils import get_available_spaces
 
 
-# Cria uma nova cópia do tabuleiro com a jogada realizada em uma posição específica
+def initialize_board():
+    # Inicializa o tabuleiro como uma matriz 3x3 vazia
+    return [
+        ["", "", ""],
+        ["", "", ""],
+        ["", "", ""]
+    ]
+
+
 def make_move(board, move, symbol):
-    new_board = deepcopy(board)  # Cria uma cópia para evitar alterar o tabuleiro original
+    # Calcula a linha e a coluna correspondentes ao movimento
+    row = (move - 1) // 3
+    col = (move - 1) % 3
 
-    move_row = (move - 1) // 3  # Calcula a linha da jogada
-    move_col = (move - 1) % 3   # Calcula a coluna da jogada
-
-    new_board[move_row][move_col] = symbol  # Atribui o símbolo na posição desejada
+    # Cria uma cópia do tabuleiro para não alterar o original
+    new_board = deepcopy(board)
+    
+    # Insere o símbolo do jogador na posição especificada
+    new_board[row][col] = symbol
     return new_board
 
 
-# Verifica o estado atual do jogo e identifica um ganhador, empate ou se o jogo continua
-def check_game_status(board):
-    # Verifica linhas para identificar vitória
-    for i in range(len(board)):
-        if board[i][0] == board[i][1] == board[i][2] != "":
-            pos_1 = i * 3 + 1
-            pos_2 = i * 3 + 2
-            pos_3 = i * 3 + 3
-            return board[i][0], (pos_1, pos_2, pos_3)  # Retorna o símbolo vencedor e as posições
+def check_game(board):
+    # Verifica cada linha para uma condição de vitória
+    for row in range(3):
+        if board[row][0] == board[row][1] == board[row][2] != "":
+            winner = board[row][0]
+            winner_positions = (row * 3 + 1, row * 3 + 2, row * 3 + 3)
 
-    # Verifica colunas para identificar vitória
-    for i in range(len(board)):
-        if board[0][i] == board[1][i] == board[2][i] != "":
-            pos_1 = i + 1
-            pos_2 = i + 4
-            pos_3 = i + 7
-            
-            return board[0][i], (pos_1, pos_2, pos_3)
+            return winner, winner_positions
+
+    # Verifica cada coluna para uma condição de vitória
+    for col in range(3):
+        if board[0][col] == board[1][col] == board[2][col] != "":
+            winner = board[0][col]
+            winner_positions = (col + 1, col + 4, col + 7)
+
+            return winner, winner_positions
         
-    # Verifica a diagonal principal para identificar vitória
-    if board[0][0] == board[1][1] == board[2][2] != "": 
-        pos_1 = 1
-        pos_2 = 5
-        pos_3 = 9
+    # Verifica a diagonal principal para uma condição de vitória
+    if board[0][0] == board[1][1] == board[2][2] != "":
+        winner = board[0][0]
+        winner_positions = (1, 5, 9)
 
-        return board[0][0], (pos_1, pos_2, pos_3)
+        return winner, winner_positions
     
-    # Verifica a diagonal secundária para identificar vitória
+    # Verifica a diagonal secundária para uma condição de vitória
     if board[0][2] == board[1][1] == board[2][0] != "":
-        pos_1 = 3
-        pos_2 = 5
-        pos_3 = 7
-        
-        return board[0][2], (pos_1, pos_2, pos_3)
+        winner = board[0][2]
+        winner_positions = (3, 5, 7)
 
-    # Se não houver espaços disponíveis, o jogo termina em empate
-    if get_available_spaces(board) == []:
+        return winner, winner_positions
+
+    # Verifica se o jogo terminou em empate
+    if not get_available_spaces(board): 
         return "draw", ()
 
-    # Caso contrário, o jogo ainda está em andamento
-    return "game in progress", ()
-
-
-# Troca o símbolo de "X" para "O" ou vice-versa
-def swap_symbol(symbol):
-    return "X" if symbol == "O" else "O"
+    # Retorna que o jogo ainda está em andamento
+    return "game in process", ()
