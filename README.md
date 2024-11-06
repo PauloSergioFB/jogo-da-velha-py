@@ -16,7 +16,7 @@ Para executar o jogo na sua máquina, siga os passos abaixo:
 1. Clone o repositório:
 
 ```bash 
-git clone https://github.com/PauloSergioFB/jogo-da-velha.git
+git clone https://github.com/PauloSergioFB/jogo-da-velha-py.git
 ```
 
 2. Navegue até o diretório do projeto:
